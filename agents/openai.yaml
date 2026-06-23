@@ -1,0 +1,4 @@
+interface:
+  display_name: "DY Creator"
+  short_description: "AI narration and B-roll video workflow"
+  default_prompt: "Use -creator to turn my approved Chinese script into a narrated short video."
