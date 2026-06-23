@@ -42,18 +42,22 @@ const fadeIn = Number(config.bgmFadeInSec ?? 0.5);
 const fadeOut = Math.min(Number(config.bgmFadeOutSec ?? 0.9), musicDuration);
 const videoOnly = path.join(tempDir, "video-only.mp4");
 const mixedAudio = path.join(tempDir, "mixed-audio.m4a");
+const videoCodec = config.videoCodec || "libx264";
+const videoEncoderArgs = videoCodec === "h264_mf"
+  ? ["-c:v", "h264_mf", "-hw_encoding", "1", "-rate_control", "quality", "-quality", "75"]
+  : ["-c:v", videoCodec, "-preset", config.preset || "veryfast", "-crf", String(config.crf ?? 21)];
+const pixelFormat = videoCodec === "h264_mf" ? "nv12" : "yuv420p";
 const fontsDir = config.fontsDir ? `:fontsdir='${ffmpegPath(config.fontsDir)}'` : "";
 const opacity = Math.max(0, Math.min(1, Number(config.videoOpacity ?? 0.7)));
 const subtitleFilter = `subtitles='${ffmpegPath(config.subtitlePath)}'${fontsDir}`;
 const videoFilter = opacity < 1
-  ? `[0:v]format=rgba,colorchannelmixer=aa=${opacity.toFixed(3)}[fg];color=c=black:s=1920x1080:r=30:d=${totalDuration.toFixed(3)}[bg];[bg][fg]overlay=0:0:format=auto[base];[base]${subtitleFilter},format=yuv420p[v]`
-  : `[0:v]${subtitleFilter},format=yuv420p[v]`;
+  ? `[0:v]lutyuv=y='val*${opacity.toFixed(3)}',${subtitleFilter},format=nv12[v]`
+  : `[0:v]${subtitleFilter},format=nv12[v]`;
 
 run([
   "-i", path.resolve(config.timelinePath), "-t", totalDuration.toFixed(3),
-  "-filter_complex", videoFilter, "-map", "[v]", "-an", "-c:v", config.videoCodec || "libx264",
-  "-preset", config.preset || "veryfast", "-crf", String(config.crf ?? 21),
-  "-pix_fmt", "yuv420p", "-movflags", "+faststart", videoOnly,
+  "-filter_complex", videoFilter, "-map", "[v]", "-an", ...videoEncoderArgs,
+  "-pix_fmt", pixelFormat, "-movflags", "+faststart", videoOnly,
 ]);
 
 const voiceVolume = Number(config.voiceVolume ?? 2.0);
