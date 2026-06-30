@@ -37,3 +37,28 @@ Set `bgmStartSec` from the first complete sentence end on the aligned source tim
 ```powershell
 node scripts/ComposeV2TwoStage.js .\project\v2-render-config.json
 ```
+
+## Caption generation
+
+Prefer word timestamps:
+
+```powershell
+python scripts/TranscribeAudioToWordJson.py .\project\audio\voice.mp3 .\project\subtitles\words.json
+node scripts\CreateWordTimestampLockedV2Srt.js .\project\subtitles\words.json .\project\dy-creator-state\qc\approved\script.txt .\project\subtitles\locked.srt
+node scripts\SrtToFixedAss.js .\project\subtitles\locked.srt .\project\subtitles\locked.ass 540 150 960 5 YourFontName 0 5 500 0
+```
+
+Fallback if only SRT timing exists:
+
+```powershell
+python scripts\TranscribeAudioToSrt.py .\project\audio\voice.mp3 .\project\subtitles\asr.srt
+node scripts\CreateAsrBoundaryLockedV2Srt.js .\project\subtitles\asr.srt .\project\dy-creator-state\qc\approved\script.txt .\project\subtitles\locked.srt
+```
+
+## Cover generation
+
+```powershell
+powershell -NoProfile -ExecutionPolicy Bypass -File .\scripts\CreateRedShadowPosterV1.ps1 -Title "自由职业" -Subtitle "把自己当公司" -Badge "人生"
+```
+
+The cover script keeps the V1 text layout fixed and automatically chooses a semantic background category. Use `-BackgroundStyle` only when the automatic category is wrong.

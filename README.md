@@ -7,9 +7,11 @@ An open-source Codex Skill for producing Chinese narration-led short videos from
 - Quality-checks a script before TTS and preserves an approved version.
 - Generates Volcengine TTS from environment-based credentials.
 - Uses ASR for caption timing while keeping final caption text faithful to the approved script.
+- Protects captions such as `5%`, `80%`, and `100%` from being split or partially hidden.
 - Splits, catalogs, and reuses owned B-roll with a cooldown ledger.
-- Renders the V2 layout: centered captions, darkened visuals, and BGM that starts after the first complete spoken sentence.
+- Renders the V2 layout: centered captions, darkened visuals, first-sentence-hidden captions, and BGM that starts after the first complete spoken sentence.
 - Mixes voice and BGM separately before remuxing to avoid intermittent background music.
+- Generates fixed-layout red-shadow covers with theme-matched backgrounds.
 
 ## Install
 
@@ -40,6 +42,8 @@ Use $dy-creator to turn my approved Chinese script into a narrated short video.
 ```
 
 Read [SKILL.md](SKILL.md) for the workflow and [references/commands.md](references/commands.md) for commands.
+
+For covers, read [references/cover-v1.md](references/cover-v1.md). For V2 video rules, read [references/v2-preset.md](references/v2-preset.md).
 
 ## Privacy and Rights
 

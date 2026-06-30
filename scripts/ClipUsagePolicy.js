@@ -1,8 +1,7 @@
 const fs = require("fs");
 const path = require("path");
 
-const DEFAULT_LEDGER_PATH = process.env.DY_CREATOR_LEDGER
-  || path.join(process.cwd(), "dy-creator-state", "clip-usage-ledger.json");
+const DEFAULT_LEDGER_PATH = path.join(process.cwd(), "dy-creator", "clip-usage-ledger.json");
 const DEFAULT_COOLDOWN_VIDEOS = 2;
 
 function normalizeClipPath(filePath) {
@@ -75,6 +74,7 @@ function registerClips(videoName, clips, options = {}) {
     videoName,
     registeredAt: now,
     clipCount: uniqueClips.length,
+    sourceSequence: Array.isArray(options.sourceSequence) ? options.sourceSequence : [],
   });
 
   for (const clipKey of uniqueClips) {

@@ -14,13 +14,18 @@ if (!configPath || !videoName) {
   process.exit(1);
 }
 
+const config = JSON.parse(require("fs").readFileSync(configPath, "utf8"));
 const clips = clipsFromConfig(configPath);
-const result = registerClips(videoName, clips, { ledgerPath });
+const sourceSequence = (config.clips || [])
+  .map((clip) => clip.sourceKeyword)
+  .filter(Boolean);
+const result = registerClips(videoName, clips, { ledgerPath, sourceSequence });
 
 console.log(JSON.stringify({
   ledgerPath,
   videoName,
   videoIndex: result.videoIndex,
   clipCount: result.clipCount,
+  sourceSequenceCount: sourceSequence.length,
   nextVideoIndex: result.ledger.nextVideoIndex,
 }, null, 2));
